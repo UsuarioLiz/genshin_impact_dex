@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useState } from "react";
 
 const tipos={
@@ -15,7 +16,7 @@ const tipos={
 
 function App() {
   const [genshinState, setGenshinState]= useState({
-    types:[]
+    types:[],
   });
 
   const fetchGenshinApi= async (item, url ="https://api.genshin.dev/") => {
@@ -29,14 +30,21 @@ function App() {
       }
       
       else {
+        
+        setGenshinState ({types: [...genshinState.types], [item]: respJson});
+      
         setGenshinState({
           ...genshinState,
           [item]: respJson,
         });
       }
+      console.log(respJson);
     };
     
-    fetchGenshinApi("types");
+    useEffect(() => {
+      fetchGenshinApi("types");
+    }, []);
+
     const handleChangeType=({ target }) => {
       const url = `https://api.genshin.dev/${target.value}`;
       fetchGenshinApi(target.value,url);
@@ -48,11 +56,23 @@ function App() {
         <h1>Genshin Impact Dex</h1>
         <hr />
         <select name="types">
-          <option value="">Seleccipne un elemento</option> {
-          genshinState.types.map((type)=> (
-          <option rey={type} value={type}> { tipos[type]} </option>
+          <option value="">Seleccione un elemento</option> {
+            genshinState.types.map((type)=> (
+          <option rey={type} value={type}>
+            { tipos[type]} 
+          </option>
           ))}
         </select>
+        { genshinState.artifacts && (
+           <select name="artifacts">
+              <option value="">Seleccione un set de artefactos</option>
+              { genshinState.artifacts.map((artifact) => (
+                 <option key={artifact} value={artifact}>
+                  {artifact}
+                 </option>
+              ))}
+           </select>
+        )}
       </div>
     );
 
